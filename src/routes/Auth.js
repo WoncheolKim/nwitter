@@ -1,3 +1,4 @@
+import { authService } from 'fbase';
 import React from 'react';
 
 const Auth = () => {
@@ -13,8 +14,19 @@ const Auth = () => {
             setPassword(value);
         }
         };
-        const onSubmit = (event) => {
+        const onSubmit = async(event) => {
             event.preventDefault();
+            try {
+                let data;
+                if (newAccount) {
+                    data = await authService.createUserWithEmailAndPassword(email, password);
+                } else {
+                    data = await authService.signInWithEmailAndPassword(email, password);
+                }
+                console.log(data);
+            } catch (error) {
+                console.log(error);
+        }
     };
     return (
         <div>
