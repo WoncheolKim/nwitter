@@ -18,11 +18,15 @@ const AppRouter = ({ isLoggedIn }) => {
                     <Route exact path='/profile'>
                         <Profile />
                     </Route>
+                    <redirect from='*' to='/' />
                 </> 
                 ) : ( 
+                <>
                     <Route exact path="/">
                         <Auth />
                     </Route>
+                    <redirect from='*' to='/' />
+                </>
                 )}
             </Switch>
         </Router>
