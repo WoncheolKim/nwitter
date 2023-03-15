@@ -1,5 +1,6 @@
-import { dbService } from '../fbase';
+import { dbService, storageService } from '../fbase';
 import React, { useState, useEffect } from 'react';
+import { v4 as uuidv3 } from "uuid";
 import Nweet from '../components/Nweet';
 
 const Home = ({ userObj })  => {
@@ -17,12 +18,14 @@ const Home = ({ userObj })  => {
     }, []);
     const onSubmit = async (event) => {
         event.preventDefault();
-        await dbService.collection("nweets").add({
-            text: nweet,
-            createdAt: Date.now(),
-            createrId: userObj.uid,
-        });
-        setNweet("");
+        const fileRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
+        const response= await fileRef.putString(attachment, "data_url");
+        // await dbService.collection("nweets").add({
+        //     text: nweet,
+        //     createdAt: Date.now(),
+        //     createrId: userObj.uid,
+        // });
+        // setNweet("");
     };
     const onChange = (event) => {
         const{
@@ -44,7 +47,9 @@ const Home = ({ userObj })  => {
         };
         reader.readAsDataURL(theFile);
     };
-    const onClearAttachment = () => setAttachment(null)
+    const onClearAttachment = () => {
+        setAttachment(null);
+    };
     return (
         <div>
             <form onSubmit={onSubmit}>
