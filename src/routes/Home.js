@@ -6,12 +6,12 @@ import Nweet from '../components/Nweet';
 const Home = ({ userObj })  => {
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const [attachment, setAttachment] = useState();
+    const [attachment, setAttachment] = useState("");
     useEffect(() => {
         dbService.collection("nweets").onSnapshot(snapshot => {
             const nweetArray = snapshot.docs.map(doc => ({
                 id:doc.id, 
-                ...doc.data()
+                ...doc.data(),
             }));
             setNweets(nweetArray);
         })
@@ -20,45 +20,43 @@ const Home = ({ userObj })  => {
         event.preventDefault();
         let attachmentUrl = "";
         if (attachment !== "") {
-            const attachmentRef = storageService
+          const attachmentRef = storageService
             .ref()
             .child(`${userObj.uid}/${uuidv4()}`);
-        const response = await attachmentRef.putString(attachment, "data_url");
-        attachmentUrl = await response.ref.getDownloadURL();
+          const response = await attachmentRef.putString(attachment, "data_url");
+          attachmentUrl = await response.ref.getDownloadURL();
         }
         const nweetObj = {
             text: nweet,
             createdAt: Date.now(),
-            createrId: userObj.uid,
+            creatorId: userObj.uid,
             attachmentUrl,
+          };
+          await dbService.collection("nweets").add(nweetObj);
+          setNweet("");
+          setAttachment("");
         };
-        await dbService.collection("nweets").add(nweetObj);
-        setNweet("");
-        setAttachment("");
+  const onChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setNweet(value);
+  };
+  const onFileChange = (event) => {
+    const {
+      target: { files },
+    } = event;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.onloadend = (finishedEvent) => {
+      const {
+        currentTarget: { result },
+      } = finishedEvent;
+      setAttachment(result);
     };
-    const onChange = (event) => {
-        const{
-            target: { value },
-        } = event;
-        setNweet(value);
-    };
-    const onFileChange = (event) => {
-        const {
-            target: { files },
-        } = event;
-        const theFile = files[0];
-        const reader = new FileReader();
-        reader.onloadend = (finishedEvent) => {
-            const {
-                currentTarget: { result },
-            } = finishedEvent;
-            setAttachment(result);
-        };
-        reader.readAsDataURL(theFile);
-    };
-    const onClearAttachment = () => {
-        setAttachment(null);
-    };
+    reader.readAsDataURL(theFile);
+  };
+  const onClearAttachment = () => setAttachment(null);
     return (
         <div>
             <form onSubmit={onSubmit}>
