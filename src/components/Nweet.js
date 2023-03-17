@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { dbService, storageService  } from "../fbase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Nweet = ({ nweetObj, isOwner }) => {
     const [editing, setEditing] = useState(false);
@@ -26,37 +28,43 @@ const Nweet = ({ nweetObj, isOwner }) => {
         setNewNweet(value);
     };
     return (
-        <div>
-          {editing ? (
-            <>
-              <form onSubmit={onSubmit}>
-                <input
-                  type="text"
-                  placeholder="Edit your Nweet"
-                  value={newNweet}
-                  required
-                  onChange={onChange}
-                />
-                <input type="submit" value="Update Nweet" />
-              </form>
-              <button onClick={toggleEditing}>CanCel</button>
-            </>
-          ) : (
-            <>
-              <h4>{nweetObj.text}</h4>
-              {nweetObj.attachmentUrl && (
-                <img src={nweetObj.attachmentUrl} alt="" width="50px" height="50px" />
-              )}
-              {isOwner && (
-                <>
-                  <button onClick={onDeleteClick}>Delete Nweet</button>
-                  <button onClick={toggleEditing}>Edit Nweet</button>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      );
-    }
-
-export default Nweet;
+      <div className="nweet">
+        {editing ? (
+          <>
+            <form onSubmit={onSubmit} className="container nweetEdit">
+              <input
+                type="text"
+                placeholder="Edit your nweet"
+                value={newNweet}
+                required
+                autoFocus
+                onChange={onChange}
+                className="formInput"
+              />
+              <input type="submit" value="Update Nweet" className="formBtn" />
+            </form>
+            <span onClick={toggleEditing} className="formBtn cancelBtn">
+              Cancel
+            </span>
+          </>
+        ) : (
+          <>
+            <h4>{nweetObj.text}</h4>
+            {nweetObj.attachmentUrl && <img src={nweetObj.attachmentUrl} />}
+            {isOwner && (
+              <div className="nweet__actions">
+                <span onClick={onDeleteClick}>
+                  <FontAwesomeIcon icon={faTrash} />
+                </span>
+                <span onClick={toggleEditing}>
+                  <FontAwesomeIcon icon={faPencilAlt} />
+                </span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+  
+  export default Nweet;
