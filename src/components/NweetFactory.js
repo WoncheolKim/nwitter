@@ -83,6 +83,7 @@ const NweetFactory = ({ userObj }) => {
         <div className="factoryForm__attachment">
           <img
             src={attachment}
+            alt=""
             style={{
               backgroundImage: attachment,
             }}
